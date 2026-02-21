@@ -21,11 +21,7 @@ OBJECTS = $(patsubst $(HAILO_DIR)/%.cpp,$(HAILO_CACHE_OBJ_DIR)/%.o,$(SOURCES))
 
 $(HAILO_SO): $(HAILO_CACHE_SO)
 	@ mkdir -p $(PRIV_DIR)
-	@ if [ "$(MIX_BUILD_EMBEDDED)" = "true" ]; then \
-		cp -a $(abspath $(HAILO_CACHE_SO)) $(HAILO_SO) ; \
-	else \
-		ln -sf ../$(HAILO_CACHE_SO) $(HAILO_SO) ; \
-	fi
+	cp -a $(abspath $(HAILO_CACHE_SO)) $(HAILO_SO)
 
 $(HAILO_CACHE_OBJ_DIR)/%.o: $(HAILO_DIR)/%.cpp
 	@ mkdir -p $(HAILO_CACHE_OBJ_DIR)

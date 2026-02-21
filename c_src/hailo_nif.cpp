@@ -340,13 +340,10 @@ build_detailed_vstream_info_map(ErlNifEnv *env,
 
     enif_make_map_put(
         env, nms_shape_map_erl,
-        fine::encode(env, fine::Atom("max_bboxes_per_class_or_total")),
-        (vstream_info.nms_shape.order_type == HAILO_NMS_RESULT_ORDER_BY_SCORE)
-            ? fine::encode(env, static_cast<uint64_t>(
-                                    vstream_info.nms_shape.max_bboxes_total))
-            : fine::encode(env,
-                           static_cast<uint64_t>(
-                               vstream_info.nms_shape.max_bboxes_per_class)),
+        fine::encode(env, fine::Atom("max_bboxes_per_class")),
+        fine::encode(env,
+                     static_cast<uint64_t>(
+                         vstream_info.nms_shape.max_bboxes_per_class)),
         &nms_shape_map_erl);
 
     enif_make_map_put(env, map_term, fine::encode(env, fine::Atom("nms_shape")),
@@ -355,20 +352,9 @@ build_detailed_vstream_info_map(ErlNifEnv *env,
                       fine::encode(env, fine::Atom("nil")), &map_term);
 
     // Calculate frame_size for NMS stream
-    uint32_t num_detections_for_size_calc = 0;
-    if (vstream_info.nms_shape.order_type == HAILO_NMS_RESULT_ORDER_BY_CLASS ||
-        vstream_info.nms_shape.order_type == HAILO_NMS_RESULT_ORDER_HW) {
-      num_detections_for_size_calc =
-          vstream_info.nms_shape.number_of_classes *
-          vstream_info.nms_shape.max_bboxes_per_class;
-    } else if (vstream_info.nms_shape.order_type ==
-               HAILO_NMS_RESULT_ORDER_BY_SCORE) {
-      num_detections_for_size_calc = vstream_info.nms_shape.max_bboxes_total;
-    } else {
-      num_detections_for_size_calc =
-          vstream_info.nms_shape.number_of_classes *
-          vstream_info.nms_shape.max_bboxes_per_class;
-    }
+    uint32_t num_detections_for_size_calc =
+        vstream_info.nms_shape.number_of_classes *
+        vstream_info.nms_shape.max_bboxes_per_class;
 
     uint32_t elements_per_detection = 6;
 

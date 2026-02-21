@@ -14,7 +14,7 @@ defmodule Hailo.MixProject do
       package: package(),
       aliases: aliases(),
       dialyzer: dialyzer(),
-      compilers: [:elixir_make] ++ Mix.compilers(),
+      compilers: compilers(),
       make_env: fn ->
         %{
           "MIX_BUILD_EMBEDDED" => "#{Mix.Project.config()[:build_embedded]}",
@@ -64,6 +64,24 @@ defmodule Hailo.MixProject do
       plt_add_apps: [:mix],
       ignore_warnings: ".dialyzer_ignore.exs"
     ]
+  end
+
+  defp compilers do
+    if hailort_available?() do
+      [:elixir_make] ++ Mix.compilers()
+    else
+      Mix.compilers()
+    end
+  end
+
+  defp hailort_available? do
+    match?({_, 0},
+      System.cmd("sh", ["-c",
+        "echo '#include <hailo/hailort.hpp>' | c++ -x c++ -E - -o /dev/null 2>/dev/null"
+      ])
+    )
+  rescue
+    _ -> false
   end
 
   defp deps do
