@@ -9,15 +9,21 @@ defmodule Hailo.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       name: "Hailo",
-      description: "TODO: write a proper description",
+      description: "Elixir library for running inference on Hailo AI accelerators via HailoRT",
       docs: docs(),
       package: package(),
       aliases: aliases(),
-      dialyzer: dialyzer()
+      dialyzer: dialyzer(),
+      compilers: [:elixir_make] ++ Mix.compilers(),
+      make_env: fn ->
+        %{
+          "MIX_BUILD_EMBEDDED" => "#{Mix.Project.config()[:build_embedded]}",
+          "FINE_INCLUDE_DIR" => Fine.include_dir()
+        }
+      end
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
@@ -34,7 +40,7 @@ defmodule Hailo.MixProject do
   def package do
     [
       name: :hailo,
-      licenses: ["Apache-2.0"],
+      licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/TODO/hailo"}
     ]
   end
@@ -60,17 +66,17 @@ defmodule Hailo.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:nx, "~> 0.6"},
+      {:elixir_make, "~> 0.6", runtime: false},
+      {:fine, "~> 0.1.0", runtime: false},
       {:nstandard, "~> 0.1"},
       {:igniter, "~> 0.6", only: [:dev, :test]},
       {:ex_doc, "~> 0.31", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:spellweaver, "~> 0.1", only: [:dev, :test], runtime: false}
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
   end
 end
